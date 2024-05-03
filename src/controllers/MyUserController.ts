@@ -11,23 +11,23 @@ const getCurrentUser = async (req: Request, res: Response) => {
         res.json(currentUser);
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ message: "something went wrong" });
+        return res.status(500).json({ message: "Something went wrong" });
     }
-}
+};
 
 const createCurrentUser = async (req: Request, res: Response) => {
     try {
         const { auth0Id } = req.body;
-        const exitstringUser = await User.findOne({ auth0Id })
+        const existingUser = await User.findOne({ auth0Id });
 
-        if (exitstringUser) {
+        if (existingUser) {
             return res.status(200).send();
         }
 
-        const newuser = new User(req.body);
-        await newuser.save();
+        const newUser = new User(req.body);
+        await newUser.save();
 
-        res.status(201).json(newuser.toObject());
+        res.status(201).json(newUser.toObject());
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: "Error creating user" });
@@ -36,7 +36,7 @@ const createCurrentUser = async (req: Request, res: Response) => {
 
 const updateCurrentUser = async (req: Request, res: Response) => {
     try {
-        const { name, addresLine1, country, city } = req.body;
+        const { name, addressLine1, country, city } = req.body;
         const user = await User.findById(req.userId);
 
         if (!user) {
@@ -44,14 +44,13 @@ const updateCurrentUser = async (req: Request, res: Response) => {
         }
 
         user.name = name;
-        user.addressLine1 = addresLine1;
+        user.addressLine1 = addressLine1;
         user.city = city;
         user.country = country;
 
         await user.save();
 
         res.send(user);
-
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: "Error updating user" });
